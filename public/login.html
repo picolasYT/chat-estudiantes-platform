@@ -183,8 +183,8 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="login">Iniciar Sesión</button>
-      <button class="tab-btn" data-tab="register">Registrarse</button>
+      <button type="button" class="tab-btn active" data-tab="login">Iniciar Sesión</button>
+      <button type="button" class="tab-btn" data-tab="register">Registrarse</button>
     </div>
 
     <!-- LOGIN -->
@@ -239,20 +239,27 @@
   </div>
 
   <script>
+    console.log('🔧 Script de login cargado');
+
     // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('📍 Click en tab:', btn.dataset.tab);
         const tab = btn.dataset.tab;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(tab).classList.add('active');
+        console.log('✅ Tab activado:', tab);
       });
     });
 
     // Login
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log('📤 Enviando login...');
+      
       const username = document.getElementById('loginUsername').value;
       const password = document.getElementById('loginPassword').value;
       const messageDiv = document.getElementById('loginMessage');
@@ -262,13 +269,17 @@
       messageDiv.innerHTML = '';
 
       try {
+        console.log('🔌 Conectando a /api/auth/login');
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, password }),
+          credentials: 'include'
         });
 
+        console.log('📩 Respuesta recibida:', response.status);
         const data = await response.json();
+        console.log('📄 Datos:', data);
 
         if (data.success) {
           messageDiv.innerHTML = `<div class="message success">✅ ${data.message}</div>`;
@@ -279,7 +290,8 @@
           messageDiv.innerHTML = `<div class="message error">❌ ${data.message}</div>`;
         }
       } catch (error) {
-        messageDiv.innerHTML = `<div class="message error">❌ Error de conexión</div>`;
+        console.error('❌ Error:', error);
+        messageDiv.innerHTML = `<div class="message error">❌ Error de conexión: ${error.message}</div>`;
       } finally {
         loading.style.display = 'none';
       }
@@ -288,6 +300,8 @@
     // Register
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log('📤 Enviando registro...');
+      
       const username = document.getElementById('registerUsername').value;
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
@@ -299,13 +313,17 @@
       messageDiv.innerHTML = '';
 
       try {
+        console.log('🔌 Conectando a /api/auth/register');
         const response = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password, confirmPassword })
+          body: JSON.stringify({ username, email, password, confirmPassword }),
+          credentials: 'include'
         });
 
+        console.log('📩 Respuesta recibida:', response.status);
         const data = await response.json();
+        console.log('📄 Datos:', data);
 
         if (data.success) {
           messageDiv.innerHTML = `<div class="message success">✅ ${data.message}</div>`;
@@ -316,11 +334,14 @@
           messageDiv.innerHTML = `<div class="message error">❌ ${data.message}</div>`;
         }
       } catch (error) {
-        messageDiv.innerHTML = `<div class="message error">❌ Error de conexión</div>`;
+        console.error('❌ Error:', error);
+        messageDiv.innerHTML = `<div class="message error">❌ Error de conexión: ${error.message}</div>`;
       } finally {
         loading.style.display = 'none';
       }
     });
+
+    console.log('✅ Script listo');
   </script>
 </body>
 </html>
